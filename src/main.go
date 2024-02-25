@@ -9,6 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -30,12 +31,10 @@ func main() {
 	// me route
 	routes.MeRoute(r)
 
+	handler := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:3000", "http://localhost:5173"},
+	}).Handler(r)
+
 	fmt.Printf("Listening at http://localhost:8080\n")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }
-
-// r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-//   w.Header().Set("Content-Type", "application/json")
-
-//   json.NewEncoder(w).Encode(map[string]string{"data": "hello world"})
-// }).Methods("GET")
