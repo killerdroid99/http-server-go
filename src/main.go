@@ -7,9 +7,16 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatal("error loading .env file")
+	}
+
 	r := mux.NewRouter()
 	// register route
 	routes.RegisterRoute(r)

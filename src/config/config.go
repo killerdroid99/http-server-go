@@ -2,27 +2,20 @@ package config
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-const (
-	Host     = "localhost"
-	User     = "postgres"
-	Password = "postgres"
-	Name     = "robo"
-	Port     = "5432"
-)
-
 func Setup() (*gorm.DB, error) {
 	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
-		Host,
-		Port,
-		User,
-		Name,
-		Password,
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_PASSWORD"),
 	)
 
 	db, err := gorm.Open(postgres.Open(connectionString), &gorm.Config{})
