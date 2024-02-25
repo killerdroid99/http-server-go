@@ -7,12 +7,13 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
+type Post struct {
 	gorm.Model
 	ID        uuid.UUID `gorm:"type:uuid;primaryKey;"`
-	Name      string
-	Email     string `gorm:"index:idx_name,unique"`
-	Password  string
+	Title     string
+	Body      string
 	CreatedAt time.Time `gorm:"autoCreateTime"`
-	Posts     []Post    `gorm:"foreignKey:AuthorID"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime"`
+	AuthorID  string    `gorm:"references:ID"`
+	Author    User
 }

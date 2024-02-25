@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"http-server/src/db"
 	"http-server/src/routes"
 	"log"
 	"net/http"
@@ -12,6 +13,8 @@ import (
 
 func main() {
 	err := godotenv.Load()
+
+	db.MigrateDB()
 
 	if err != nil {
 		log.Fatal("error loading .env file")

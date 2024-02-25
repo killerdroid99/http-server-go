@@ -7,8 +7,7 @@ import (
 	"log"
 )
 
-func main() {
-
+func MigrateDB() {
 	// connect db
 	db, err := config.Setup()
 	if err != nil {
@@ -17,5 +16,5 @@ func main() {
 	}
 	fmt.Println("Connected")
 	// db auto migrate models
-	db.AutoMigrate(models.User{})
+	db.AutoMigrate(models.User{}, models.Post{})
 }

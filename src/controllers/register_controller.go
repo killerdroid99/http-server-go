@@ -100,7 +100,7 @@ func RegisterUser(db *gorm.DB, user models.User) http.HandlerFunc {
 						"id":        newUser.ID,
 						"name":      newUser.Name,
 						"email":     newUser.Email,
-						"createdAt": newUser.Created,
+						"createdAt": newUser.CreatedAt,
 					},
 				})
 				return
@@ -113,7 +113,7 @@ func RegisterUser(db *gorm.DB, user models.User) http.HandlerFunc {
 				"id":        newUser.ID,
 				"name":      newUser.Name,
 				"email":     newUser.Email,
-				"createdAt": newUser.Created,
+				"createdAt": newUser.CreatedAt,
 			},
 		})
 	}
