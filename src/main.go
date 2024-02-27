@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"http-server/src/db"
 	"http-server/src/routes"
 	"log"
 	"net/http"
@@ -14,8 +13,6 @@ import (
 
 func main() {
 	err := godotenv.Load()
-
-	db.MigrateDB()
 
 	if err != nil {
 		log.Fatal("error loading .env file")
@@ -30,6 +27,12 @@ func main() {
 	routes.LogoutRoute(r)
 	// me route
 	routes.MeRoute(r)
+
+	// create new post route
+	// routes.CreatePostRoute(r)
+
+	// post router
+	routes.PostRouter(r)
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:3000", "http://localhost:5173"},
