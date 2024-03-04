@@ -44,13 +44,16 @@ func CreatePost(db *gorm.DB, post models.Post) http.HandlerFunc {
 			return
 		}
 
+		md := []byte(body)
+		html := utils.MarkdownToHTML(md)
+
 		cookie, _ := r.Cookie("JWT")
 		token, _ := utils.VerifyJWT(cookie.Value)
 
 		newPost := models.Post{
 			ID:       uuid.New(),
 			Title:    title,
-			Body:     body,
+			Body:     string(html),
 			AuthorID: token.Claims.(*structs.UserClaims).UserID,
 		}
 
@@ -158,7 +161,8 @@ func GetAllPosts(db *gorm.DB, posts []models.Post) http.HandlerFunc {
 
 		var allPosts []structs.Post
 
-		db.Select("posts.*, users.name AS author_name").Joins("LEFT JOIN users ON users.id=posts.author_id").Order("created_at DESC").Where("posts.deleted_at IS NULL").Find(&allPosts)
+		db.Select("posts.*, users.name AS author_name").Joins("LEFT JOIN users ON users.id=posts.author_id").Order("created_at DESC").Find(&allPosts)
+		// db.Select("posts.*, users.name AS author_name").Joins("LEFT JOIN users ON users.id=posts.author_id").Order("created_at DESC").Where("posts.deleted_at IS NULL").Find(&allPosts)
 
 		utils.SetResponse(w, http.StatusOK, "success", allPosts)
 	}
@@ -171,8 +175,8 @@ func GetPostById(db *gorm.DB) http.HandlerFunc {
 		// getting post id from url
 		vars := mux.Vars(r)
 
-		var post models.Post
-		result := db.Select("posts.*, users.name AS author_name").Where("posts.id = ?", vars["postID"]).Joins("LEFT JOIN users ON users.id=posts.author_id").Take(&post)
+		var post structs.Post
+		result := db.Select("posts.*, users.name AS author_name").Joins("LEFT JOIN users ON users.id=posts.author_id").Where("posts.id = ? AND posts.deleted_at IS NOT NULL", vars["postID"]).Take(&post)
 
 		// checking if post exists or not
 		if result.Error != nil {
@@ -181,22 +185,21 @@ func GetPostById(db *gorm.DB) http.HandlerFunc {
 		}
 
 		// checking if post is deleted or not
-		if !post.DeletedAt.IsZero() {
-			utils.SetResponse(w, http.StatusForbidden, "error", "This post has been deleted")
-			return
-		}
+		// if !post.DeletedAt.IsZero() {
+		// 	utils.SetResponse(w, http.StatusForbidden, "error", "This post has been deleted")
+		// 	return
+		// }
 
-		var resPost structs.Post
+		// var resPost structs.Post
 
-		resPost.ID = post.ID
-		resPost.Title = post.Title
-		resPost.Body = post.Body
-		resPost.CreatedAt = post.CreatedAt
-		resPost.UpdatedAt = post.UpdatedAt
-		resPost.AuthorID = post.AuthorID
-		resPost.AuthorName = *post.AuthorName
+		// resPost.ID = post.ID
+		// resPost.Title = post.Title
+		// resPost.Body = post.Body
+		// resPost.CreatedAt = post.CreatedAt
+		// resPost.UpdatedAt = post.UpdatedAt
+		// resPost.AuthorID = post.AuthorID
 
-		utils.SetResponse(w, http.StatusOK, "success", resPost)
+		utils.SetResponse(w, http.StatusOK, "success", post)
 	}
 }
 
