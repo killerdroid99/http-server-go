@@ -35,7 +35,10 @@ func main() {
 	routes.PostRouter(r)
 
 	handler := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000", "http://localhost:5173"},
+		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:5173"},
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodPatch},
+		AllowCredentials: true,
+		Debug:            true,
 	}).Handler(r)
 
 	fmt.Printf("Listening at http://localhost:8080\n")
