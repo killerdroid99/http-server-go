@@ -3,7 +3,6 @@ package routes
 import (
 	"http-server/src/config"
 	"http-server/src/controllers"
-	"http-server/src/models"
 	"log"
 
 	"github.com/gorilla/mux"
@@ -12,7 +11,7 @@ import (
 func LoginRoute(router *mux.Router) {
 	db, err := config.Setup()
 
-	router.HandleFunc("/login", controllers.LoginUser(db, models.User{})).Methods("POST")
+	router.HandleFunc("/login", controllers.LoginUser(db)).Methods("POST")
 
 	if err != nil {
 		log.Panic(err)
@@ -31,7 +30,7 @@ func MeRoute(router *mux.Router) {
 func RegisterRoute(router *mux.Router) {
 	db, err := config.Setup()
 
-	router.HandleFunc("/register", controllers.RegisterUser(db, models.User{})).Methods("POST")
+	router.HandleFunc("/register", controllers.RegisterUser(db)).Methods("POST")
 
 	if err != nil {
 		log.Panic(err)
