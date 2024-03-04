@@ -1,0 +1,4 @@
+= Hello world
+
+These are the test docs for this http-server repository made with Go in backend
+and uses SolidJs as frontend UI library
