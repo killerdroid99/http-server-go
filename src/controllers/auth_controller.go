@@ -14,9 +14,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func LoginUser(db *gorm.DB, user models.User) http.HandlerFunc {
+func LoginUser(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		var user models.User
 		loginUserInput := structs.LoginUser{}
 
 		// check if session already exists
@@ -50,15 +51,17 @@ func LoginUser(db *gorm.DB, user models.User) http.HandlerFunc {
 		}
 
 		// check if user exists
-		existingUser := db.First(&user, "email = ?", email)
+		existingUser := db.Take(&user, "email = ?", email)
 		if existingUser.Error != nil {
-			utils.SetResponse(w, http.StatusBadRequest, "error", fmt.Sprintf("User with email: %s not found", email))
+			utils.SetResponse(w, http.StatusBadRequest, "error", map[string]string{"value": fmt.Sprintf("User with email: %s not found", email), "field": "email"})
 			return
 		}
 
 		// verifying password
 		if validPassword := utils.VerifyPassword(user.Password, password); !validPassword {
-			utils.SetResponse(w, http.StatusBadRequest, "error", "Wrong password")
+			utils.SetResponse(w, http.StatusBadRequest, "error", map[string]string{
+				"value": "Wrong password", "field": "password",
+			})
 			return
 		}
 
@@ -70,7 +73,7 @@ func LoginUser(db *gorm.DB, user models.User) http.HandlerFunc {
 				Name:     "JWT",
 				Value:    ss,
 				Path:     "/",
-				MaxAge:   int(25 * time.Hour),
+				MaxAge:   int(24 * 60 * 60 * 1000), // 1 day
 				HttpOnly: false,
 				Secure:   true,
 				SameSite: http.SameSiteLaxMode,
@@ -128,9 +131,10 @@ func Me() http.HandlerFunc {
 	}
 }
 
-func RegisterUser(db *gorm.DB, user models.User) http.HandlerFunc {
+func RegisterUser(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		var user models.User
 		registerUserInput := structs.RegisterUser{}
 
 		// check if session already exists
@@ -171,7 +175,7 @@ func RegisterUser(db *gorm.DB, user models.User) http.HandlerFunc {
 		// check if user exists
 		existingUser := db.First(&user, "email = ?", email)
 		if existingUser.Error == nil {
-			utils.SetResponse(w, http.StatusConflict, "error", fmt.Sprintf("User with email: %s already exists", email))
+			utils.SetResponse(w, http.StatusConflict, "error", map[string]string{"value": fmt.Sprintf("User with email: %s already exists", email), "field": "email"})
 			return
 		}
 
