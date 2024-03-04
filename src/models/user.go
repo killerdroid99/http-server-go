@@ -13,6 +13,7 @@ type User struct {
 	Name      string
 	Email     string `gorm:"index:idx_name,unique"`
 	Password  string
+	ImgUrl    *string
 	CreatedAt time.Time `gorm:"autoCreateTime"`
 	Posts     []Post    `gorm:"foreignKey:AuthorID"`
 }
